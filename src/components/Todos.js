@@ -5,7 +5,7 @@ function Todo(id, text) {
     this.id = id;
     this.text = text;
 }
-
+document.querySelector('form').text.focus();
 function Todos() {
     const [todos, setTodos] = useState([]);
     const [text, setText] = useState('');
@@ -24,7 +24,7 @@ function Todos() {
         setText('');
         e.target.form.reset();
         e.target.focus();
-    }
+        addFocus();    }
     const handleDel = (e) => {
         const getTodos = [...todos];
         
@@ -34,19 +34,26 @@ function Todos() {
                 setTodos(getTodos);
             }
         })
+        addFocus();
     }
-    window.todos = todos;
+    const addFocus = () => {
+        document.querySelector('form').text.focus();
+    }
+    // window.todos = todos;
   return (
-    <div>
+    <div className="container">
+        <h2>add a todo</h2>
       <form>
         <input type="text" name="text" onChange={handleText} />
         <button type="submit" onClick={addTodo}>
           add
         </button>
       </form>
+      <ul>
       {todos.map(todo => (
-          <li key={todo.id} data-id={todo.id}>{todo.text} <button data-id={todo.id} onClick={handleDel}>delete</button></li>
+          <li key={todo.id} data-id={todo.id}>{todo.text} <button className="btn btn-close" data-id={todo.id} onClick={handleDel}>&times;</button></li>
       ))}
+      </ul>
     </div>
   );
 }
