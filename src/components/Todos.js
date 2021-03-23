@@ -1,61 +1,58 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { connect } from 'react-redux';
+import { addTodo, deleteTodo, getTodos } from '../redux/actions/index';
+import Todo from './Todo';
 
 // my todo object constructor
-function Todo(id, text) {
+function TodoObj(id, text) {
     this.id = id;
     this.text = text;
 }
-document.querySelector('form').text.focus();
-function Todos() {
-    const [todos, setTodos] = useState([]);
+
+function ConnectedTodosForm({ addTodo, todos }) {
     const [text, setText] = useState('');
+
+    useEffect(() => {
+      getTodos();
+      console.log(todos);
+    });
 
     const handleText = (e) => {
         setText(e.target.value.trim());
     }
-    const addTodo = (e) => {
+    const handleAddTodo = (e) => {
         e.preventDefault();
-        const todo = new Todo(new Date().getTime(), text)
-        const todoArr = [...todos];
+        const todo = new TodoObj(new Date().getTime(), text);
         if(text){
-            todoArr.push(todo);
-            setTodos(todoArr)
+          addTodo(todo);
         }
         setText('');
-        e.target.form.reset();
-        e.target.focus();
-        addFocus();    }
-    const handleDel = (e) => {
-        const getTodos = [...todos];
-        
-        getTodos.forEach((todo, index) => {
-            if(todo.id === Number(e.target.getAttribute('data-id'))) {
-                getTodos.splice(index, 1);
-                setTodos(getTodos);
-            }
-        })
-        addFocus();
-    }
-    const addFocus = () => {
-        document.querySelector('form').text.focus();
-    }
-    // window.todos = todos;
+      }
+
   return (
     <div className="container">
         <h2>add a todo</h2>
       <form>
         <input type="text" name="text" onChange={handleText} />
-        <button type="submit" onClick={addTodo}>
-          add
+        <button onClick={handleAddTodo}>
+          handle add todo
         </button>
       </form>
       <ul>
-      {todos.map(todo => (
-          <li key={todo.id} data-id={todo.id}>{todo.text} <button className="btn btn-close" data-id={todo.id} onClick={handleDel}>&times;</button></li>
-      ))}
+      {todos.map(todo => (<Todo todo={todo} key={todo.id} />))}
       </ul>
     </div>
   );
 }
 
-export default Todos;
+const mapStateToProps = state => ({
+  todos: state.todos
+});
+
+const mapDispatchToProps = dispatch => ({
+  addTodo: payload => dispatch(addTodo(payload)),
+  deleteTodo: payload => dispatch(deleteTodo(payload)),
+  getTodos: () => dispatch(getTodos())
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(ConnectedTodosForm);
